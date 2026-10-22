@@ -159,7 +159,9 @@ float TruStabilityRsc::ConvertPres(const uint8_t count, uint8_t * const data) {
           static_cast<int32_t>(data[2]) << 8;
   praw_ /= 256;
   prawf_ = static_cast<float>(praw_);
-  trawf_ = static_cast<float>(traw_);
+  /* Traw is 14-bit two's complement, and the compensation takes it signed */
+  trawf_ = static_cast<float>((traw_ & 0x2000) ? static_cast<int32_t>(traw_) - 0x4000
+                                               : static_cast<int32_t>(traw_));
   pint1_ = prawf_ - (offset_matrix_[3] * trawf_ * trawf_ * trawf_ +
                      offset_matrix_[2] * trawf_ * trawf_ +
                      offset_matrix_[1] * trawf_ +
